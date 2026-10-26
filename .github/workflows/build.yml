@@ -2,7 +2,8 @@ name: Build Android APK
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -17,55 +18,54 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
-
-      - name: Locate Android project
-        id: project
-        shell: bash
-        run: |
-          echo "Repository files:"
-          find . -maxdepth 4 \( -name settings.gradle -o -name settings.gradle.kts \) -print
-
-          PROJECT_DIR=""
-          for file in settings.gradle settings.gradle.kts KD.JS/settings.gradle KD.JS/settings.gradle.kts app/settings.gradle app/settings.gradle.kts; do
-            if [ -f "$file" ]; then
-              PROJECT_DIR="$(dirname "$file")"
-              break
-            fi
-          done
-
-          if [ -z "$PROJECT_DIR" ]; then
-            PROJECT_DIR="$(find . -maxdepth 4 \( -name settings.gradle -o -name settings.gradle.kts \) -print -quit | xargs -r dirname)"
-          fi
-
-          if [ -z "$PROJECT_DIR" ]; then
-            echo "ERROR: No Gradle settings file found."
-            exit 1
-          fi
-
-          PROJECT_DIR="$(realpath "$PROJECT_DIR")"
-          echo "Project directory: $PROJECT_DIR"
-          echo "dir=$PROJECT_DIR" >> "$GITHUB_OUTPUT"
+          java-version: '17'
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: ''
+
+      - name: Accept Android SDK licenses
+        run: |
+          yes | sdkmanager --licenses || true
+
+      - name: Locate Gradle project
+        id: project
+        shell: bash
+        run: |
+          echo "Searching for Gradle project..."
+          SETTINGS_FILE=$(find . -type f \( -name settings.gradle -o -name settings.gradle.kts \) -not -path './.git/*' | head -n 1)
+
+          if [ -z "$SETTINGS_FILE" ]; then
+            echo "ERROR: settings.gradle or settings.gradle.kts was not found."
+            echo "Repository files:"
+            find . -maxdepth 4 -type f | head -n 200
+            exit 1
+          fi
+
+          PROJECT_DIR=$(dirname "$SETTINGS_FILE")
+          echo "Project directory: $PROJECT_DIR"
+          echo "project_dir=$PROJECT_DIR" >> "$GITHUB_OUTPUT"
+
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Install Gradle 8.5
         run: |
-          wget https://services.gradle.org/distributions/gradle-8.5-bin.zip
+          wget -q https://services.gradle.org/distributions/gradle-8.5-bin.zip
           unzip -q gradle-8.5-bin.zip
           echo "$GITHUB_WORKSPACE/gradle-8.5/bin" >> "$GITHUB_PATH"
 
-      - name: Build App
-        working-directory: ${{ steps.project.outputs.dir }}
+      - name: Build Android APK
+        working-directory: ${{ steps.project.outputs.project_dir }}
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
-          gradle :app:assembleDebug --no-daemon
+          gradle assembleDebug --no-daemon
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: '**/app/build/outputs/apk/debug/app-debug.apk'
+          path: '**/build/outputs/apk/debug/*.apk'
           if-no-files-found: error
-          

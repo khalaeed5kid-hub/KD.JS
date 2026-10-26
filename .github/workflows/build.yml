@@ -19,21 +19,21 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Create local.properties for SDK
-      run: echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
-
     - name: Download and Install Modern Gradle 8.5
       run: |
         wget https://services.gradle.org/distributions/gradle-8.5-bin.zip
         unzip -q gradle-8.5-bin.zip
         echo "$PWD/gradle-8.5/bin" >> $GITHUB_PATH
 
-    - name: Build App with Gradle 8.5
-      run: gradle :app:assembleDebug --no-daemon
+    - name: Build App inside Subdirectory
+      working-directory: ./KD.JS
+      run: |
+        echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
+        gradle :app:assembleDebug --no-daemon
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: KD.JS/app/build/outputs/apk/debug/app-debug.apk
         

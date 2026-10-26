@@ -8,9 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./KD.JS
 
     steps:
     - name: Checkout repository
@@ -30,6 +27,7 @@ jobs:
 
     - name: Build App with Gradle 8.5
       run: |
+        cd KD.JS
         echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
         gradle :app:assembleDebug --no-daemon
 

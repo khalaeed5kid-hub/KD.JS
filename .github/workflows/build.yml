@@ -19,11 +19,36 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Install Android SDK packages
+      - name: Locate Android project
+        id: project
+        shell: bash
         run: |
-          echo "sdk.dir=$ANDROID_HOME" > local.properties
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          echo "Repository files:"
+          find . -maxdepth 4 \( -name settings.gradle -o -name settings.gradle.kts \) -print
+
+          PROJECT_DIR=""
+          for file in settings.gradle settings.gradle.kts KD.JS/settings.gradle KD.JS/settings.gradle.kts app/settings.gradle app/settings.gradle.kts; do
+            if [ -f "$file" ]; then
+              PROJECT_DIR="$(dirname "$file")"
+              break
+            fi
+          done
+
+          if [ -z "$PROJECT_DIR" ]; then
+            PROJECT_DIR="$(find . -maxdepth 4 \( -name settings.gradle -o -name settings.gradle.kts \) -print -quit | xargs -r dirname)"
+          fi
+
+          if [ -z "$PROJECT_DIR" ]; then
+            echo "ERROR: No Gradle settings file found."
+            exit 1
+          fi
+
+          PROJECT_DIR="$(realpath "$PROJECT_DIR")"
+          echo "Project directory: $PROJECT_DIR"
+          echo "dir=$PROJECT_DIR" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Install Gradle 8.5
         run: |
@@ -32,13 +57,15 @@ jobs:
           echo "$GITHUB_WORKSPACE/gradle-8.5/bin" >> "$GITHUB_PATH"
 
       - name: Build App
+        working-directory: ${{ steps.project.outputs.dir }}
         run: |
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
           gradle :app:assembleDebug --no-daemon
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: '**/app/build/outputs/apk/debug/app-debug.apk'
           if-no-files-found: error
           

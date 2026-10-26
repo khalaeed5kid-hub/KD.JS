@@ -19,11 +19,8 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-
     - name: Create local.properties for SDK
-      run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+      run: echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
 
     - name: Download and Install Modern Gradle 8.5
       run: |

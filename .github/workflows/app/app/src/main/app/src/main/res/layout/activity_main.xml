@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#121212">
+
+    <!-- عنوان التطبيق -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="مراقب نتائج Aviator"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:paddingBottom="12dp"/>
+
+    <!-- حالة المراقبة الحالية -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="الحالة: متوقف"
+        android:textColor="#FF5722"
+        android:textSize="16sp"
+        android:paddingBottom="8dp"/>
+
+    <!-- معلومات سريعة -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:id="@+id/tvRoundsCount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="الجولات: 0"
+            android:textColor="#CCCCCC"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/tvLastMultiplier"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="آخر معامل: --"
+            android:textColor="#00E676"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <!-- أزرار التحكم -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="12dp">
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="بدء المراقبة"
+            android:backgroundTint="#4CAF50"/>
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="إيقاف المراقبة"
+            android:backgroundTint="#F44336"/>
+    </LinearLayout>
+
+    <!-- عرض السجل -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="سجل النتائج:"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:paddingBottom="4dp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#1E1E1E"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/tvLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="في انتظار بدء المراقبة وظهر نقطة 1.00x..."
+            android:textColor="#00E676"
+            android:textSize="13sp"
+            android:fontFamily="monospace"/>
+    </ScrollView>
+
+    <!-- أزرار إضافية -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="12dp">
+
+        <Button
+            android:id="@+id/btnExport"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="مشاركة السجل"/>
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="حذف السجل"
+            android:backgroundTint="#9E9E9E"/>
+    </LinearLayout>
+
+</LinearLayout>
+      

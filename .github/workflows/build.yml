@@ -25,8 +25,7 @@ jobs:
         unzip -q gradle-8.5-bin.zip
         echo "$PWD/gradle-8.5/bin" >> $GITHUB_PATH
 
-    - name: Build App inside Subdirectory
-      working-directory: ./KD.JS
+    - name: Build App with Gradle 8.5
       run: |
         echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
         gradle :app:assembleDebug --no-daemon
@@ -35,5 +34,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
-        path: KD.JS/app/build/outputs/apk/debug/app-debug.apk
+        path: app/build/outputs/apk/debug/app-debug.apk
         
